@@ -40,6 +40,30 @@ license texts. These submodules are runtime reference material for the skill and
 must be initialized before packaging or installing it. Installed skills do not
 run Just recipes.
 
+## Install as a user skill
+
+This repository uses submodules for required reference material. Cloning only
+the skill directory, or downloading a source archive, leaves gitlink directories
+without their contents and produces an incomplete installation. The recipe below
+creates a uniquely named directory under `/tmp`, initializes its submodules,
+then copies the completed skill without its Git metadata.
+
+```bash
+just install-user-skill
+```
+
+The default installation root is `~/.agents/skills`, so the skill is installed
+to `~/.agents/skills/write-idiomatic-rust`. Pass a different root as an argument
+when needed:
+
+```bash
+just install-user-skill /path/to/skills
+```
+
+The recipe intentionally fails if the destination skill directory already
+exists and removes the temporary clone on exit. Codex discovers the installed
+skill on the next turn.
+
 ## Updating references
 
 `just update-references` advances the Rust API Guidelines, Microsoft Pragmatic

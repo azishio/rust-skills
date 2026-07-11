@@ -22,6 +22,22 @@ just setup
 
 `just setup`はsubmoduleを親repositoryで記録されたrevisionへ初期化し、各upstreamで必要な`src/`とlicense textだけをsparse checkoutします。これらのsubmoduleはskillの実行に必要なreferenceであり、配布・インストール時には必ず初期化済みにします。インストール済みskillはJust recipeを実行しません。
 
+## ユーザーskillとしてのインストール
+
+このrepositoryは、実行に必要なreferenceをsubmoduleで管理しています。skill directoryだけをcloneしたりsource archiveをdownloadしたりすると、gitlink directoryの中身がないため、不完全な状態になります。次のrecipeは一意の名前のdirectoryを`/tmp`に作成し、submoduleを初期化した後、Git metadataを除外して完成したskillをcopyします。
+
+```bash
+just install-user-skill
+```
+
+既定のinstall rootは`~/.agents/skills`であり、skillは`~/.agents/skills/write-idiomatic-rust`へinstallされます。異なるinstall rootを使う場合は、引数で指定してください。
+
+```bash
+just install-user-skill /path/to/skills
+```
+
+recipeは、install先のskill directoryが既に存在する場合は意図的に失敗し、終了時にtemporary cloneを削除します。Codexは次のturnからinstall済みskillを検出します。
+
 ## 参照資料の更新
 
 `just update-references`はRust API Guidelines、Microsoft Pragmatic Rust Guidelines、Rust Design Patternsの追跡ブランチ先端へsubmoduleを更新します。この操作で親repositoryのgitlinkが変更されるため、内容を確認してからcommitしてください。通常の`just setup`は記録済みrevisionへ戻すため、再現可能なskill利用環境を提供します。
