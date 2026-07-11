@@ -1,5 +1,10 @@
 # Repository guidance
 
+## Language parity
+
+- `AGENTS.md` is the English instruction file and `AGENTS.ja.md` is its Japanese counterpart. Keep their requirements semantically equivalent.
+- Update both files in the same change whenever either file's instructions change; treat any unintended difference as a defect.
+
 ## Layout
 
 - `skills/` contains only files an agent needs to execute a skill.
