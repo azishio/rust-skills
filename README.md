@@ -30,10 +30,16 @@ just setup
 - `justfile`: clone後の初期化、参照資料の更新、sparse checkout設定。
 - `README.md`: 人間向けの導入・保守情報。
 
+## License
+
+このrepositoryで作成したfileは、[MIT License](LICENSE-MIT) または [Apache License, Version 2.0](LICENSE-APACHE) のいずれかを、利用者の選択で適用できるdual licenseとする。contributionも、明示的に別条件を指定しない限り同じ条件で受け入れる。
+
+`skills/write-idiomatic-rust/references/` 配下のsubmoduleは独立したupstream projectであり、上記licenseの対象外である。各submoduleのライセンスと配布時の注意は[Third-party notices](THIRD_PARTY_NOTICES.md)を確認する。referenceを含むarchiveやpackageを配布するときは、submoduleを初期化し、含まれるupstreamのlicense textとnoticeを保持する。
+
 ## Upstream references
 
 - `rust-lang/api-guidelines` (`master`): Rust API Guidelines。Apache-2.0 または MIT。
 - `microsoft/rust-guidelines` (`main`): Pragmatic Rust Guidelines。MIT。
 - `rust-unofficial/patterns` (`main`): Rust Design Patterns。MPL-2.0。
 
-それぞれの固定revisionは親repositoryのgitlinkに記録されます。source、revision、licenseの保守情報はこのREADMEと`.gitmodules`で管理し、skill本体には含めません。
+それぞれの固定revisionは親repositoryのgitlinkに記録されます。source、revision、licenseの保守情報はこのREADME、`.gitmodules`、[Third-party notices](THIRD_PARTY_NOTICES.md)で管理し、skill本体には含めません。

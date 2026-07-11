@@ -11,9 +11,9 @@ setup:
 
 # Reapply the non-cone patterns after cloning or updating submodules.
 sparse-references:
-    git -C skills/write-idiomatic-rust/references/rust-api-guidelines sparse-checkout set --no-cone /src/
-    git -C skills/write-idiomatic-rust/references/rust-design-patterns sparse-checkout set --no-cone /src/
-    git -C skills/write-idiomatic-rust/references/microsoft-rust-guidelines sparse-checkout set --no-cone /src/
+    git -C skills/write-idiomatic-rust/references/rust-api-guidelines sparse-checkout set --no-cone /src/ /LICENSE-APACHE /LICENSE-MIT
+    git -C skills/write-idiomatic-rust/references/rust-design-patterns sparse-checkout set --no-cone /src/ /LICENSE
+    git -C skills/write-idiomatic-rust/references/microsoft-rust-guidelines sparse-checkout set --no-cone /src/ /LICENSE.md
 
 # Advance the tracked upstream branches. Commit the resulting gitlink changes
 # in the parent repository after reviewing them.
