@@ -1,0 +1,8 @@
+[submodule "skills/write-idiomatic-rust/references/rust-api-guidelines"]
+	path = skills/write-idiomatic-rust/references/rust-api-guidelines
+	url = https://github.com/rust-lang/api-guidelines.git
+	branch = master
+[submodule "skills/write-idiomatic-rust/references/rust-design-patterns"]
+	path = skills/write-idiomatic-rust/references/rust-design-patterns
+	url = https://github.com/rust-unofficial/patterns.git
+	branch = main
