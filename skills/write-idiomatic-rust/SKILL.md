@@ -1,126 +1,126 @@
 ---
 name: write-idiomatic-rust
-description: 公開APIと内部実装の両方で、可読性が高く慣用的で保守しやすいRustコードを実装、修正、レビュー、リファクタリングする。型・所有権・error設計、関数とmethodの配置、依存追加、Rustのdesign guidelineとpattern、Clippy指摘を扱うときに使用する。
+description: Implement, fix, review, and refactor readable, idiomatic, maintainable Rust across public APIs and internal implementations. Use for types, ownership, error design, function and method placement, dependencies, Rust design guidelines and patterns, and Clippy findings.
 ---
 
 # Write Idiomatic Rust
 
-変更するすべてのcodeを、公開範囲にかかわらず可読性、予測可能性、型安全性、保守性の同じ基準で扱う。既存のconventionと要件を優先し、API Guidelines、Pragmatic Rust Guidelines、design patternsから該当する規則を積極的に探して適用する。規則の目的とtrade-offを考慮し、対象外と判断した規則は理由を説明できるようにする。抽象化や依存は、所有権、型安全性、責務、重複削減に具体的な利益がある場合だけ追加する。
+Apply the same standards of readability, predictability, type safety, and maintainability to every change, regardless of visibility. Prioritize existing conventions and requirements, and proactively locate and apply relevant rules from the API Guidelines, Pragmatic Rust Guidelines, and design patterns. Consider each rule's purpose and trade-offs, and be able to explain why an inapplicable rule was excluded. Add abstractions or dependencies only when they provide a concrete benefit to ownership, type safety, responsibility, or duplication reduction.
 
 ## Workflow
 
-1. `Cargo.toml`、workspace、公開範囲、edition、`rust-version`、feature、`no_std`、既存依存、関連testを確認する。
-2. public/privateを問わず、変更するAPI、型、所有権、error、関数とmethodの配置、構築処理を特定し、既存の名前とconventionを優先する。
-3. 下の「Reference guide」から、変更するcodeに該当するchecklist項目とfileを積極的に選んで読む。公開API専用の規則を除き、内部実装にも同じ設計基準を適用する。Pragmatic Rust Guidelinesの意見の強い規則はproject要件と計測結果に照らし、patternは利点と欠点を併読する。
-4. 読み手が責務、data flow、所有権を追いやすい最小案を選び、既存動作と公開互換性を保って実装する。短さや再利用の可能性だけを理由にhelper、trait、型、moduleを増やさない。breaking changeが必要なら影響と移行方法を明示する。
-5. 対象projectのrootをカレントディレクトリにして、`<skill-root>/scripts/strict-clippy.sh`を実行する。必要なworkspace、package、target、feature optionはrunnerへ渡す。続けて、対象projectまたはworkspaceが指定する通常のClippy commandを実行し、format・test・feature matrixもprojectの方針に従って検証する。
+1. Inspect `Cargo.toml`, the workspace, visibility, edition, `rust-version`, features, `no_std`, existing dependencies, and relevant tests.
+2. Identify every affected API, type, ownership boundary, error, function or method placement, and construction path, whether public or private. Prefer existing names and conventions.
+3. Use the Reference guide below to actively select the checklist items and files relevant to the change. Apply the same design standards to internal implementations except for rules that apply only to public APIs. Evaluate opinionated Pragmatic Rust Guidelines against project requirements and measurements; read both benefits and drawbacks for patterns.
+4. Implement the smallest design that lets readers follow responsibility, data flow, and ownership, while preserving behavior and public compatibility. Do not add helpers, traits, types, or modules merely for brevity or possible reuse. If a breaking change is required, state its impact and migration path.
+5. From the target project's root, run `<skill-root>/scripts/strict-clippy.sh`. Pass needed workspace, package, target, and feature options to the runner. Then run the normal Clippy command required by the project or workspace, and validate formatting, tests, and the feature matrix according to project policy.
 
 ## Reference guide
 
-必要な判断に対応するfileだけを開く。該当先が明確でない場合は、[API summary](references/rust-api-guidelines/src/SUMMARY.md)、[Pragmatic summary](references/microsoft-rust-guidelines/src/SUMMARY.md)、[Patterns summary](references/rust-design-patterns/src/SUMMARY.md)で候補を絞り、本文を一括で読まない。
+Open only the files needed for the decision at hand. When the destination is unclear, narrow the candidates with the [API summary](references/rust-api-guidelines/src/SUMMARY.md), [Pragmatic summary](references/microsoft-rust-guidelines/src/SUMMARY.md), or [Patterns summary](references/rust-design-patterns/src/SUMMARY.md); do not read the full bodies indiscriminately.
 
 ### API and internal design
 
-type、trait、function、method、macro、moduleを変更するときは、公開範囲にかかわらずAPI Guidelinesを使う。最初に[checklist](references/rust-api-guidelines/src/checklist.md)から該当する`C-*`項目を選び、命名、予測可能性、柔軟性、型安全性、信頼性など内部実装にも有効な規則を適用する。downstream互換性、crate metadata、public documentationなど公開surfaceを前提とする規則だけは公開APIに限定する。
+Use the API Guidelines whenever changing a type, trait, function, method, macro, or module, regardless of visibility. Start with the relevant `C-*` items in the [checklist](references/rust-api-guidelines/src/checklist.md), applying rules useful to internal code as well, such as naming, predictability, flexibility, type safety, and dependability. Limit rules that assume downstream compatibility, crate metadata, or public documentation to public APIs.
 
-| こういう場合に読む | 参照先と確認内容 |
+| Read when | Reference and check |
 | --- | --- |
-| type、trait、method、moduleの名前を決める。getter、conversion、iteratorの命名やcost表現を確認する | [naming](references/rust-api-guidelines/src/naming.md) — case、`as_` / `to_` / `into_`、getter、iteratorの規約 |
-| 標準traitを実装する。Serde連携、error type、`Read` / `Write`との相互運用を設計する | [interoperability](references/rust-api-guidelines/src/interoperability.md) — common trait、error、serialization、I/Oの期待 |
-| public macroまたはderive macroを追加・変更する | [macros](references/rust-api-guidelines/src/macros.md) — invocation、attribute、衛生性、診断、将来の拡張性 |
-| rustdoc、example、failure条件、crate metadataを追加・レビューする | [documentation](references/rust-api-guidelines/src/documentation.md) — crate docs、example、`# Errors` / `# Panics` / `# Safety`、metadata |
-| public/privateを問わずfunctionをmethodにするか、constructorをどう表すか、`Deref`やoperatorを実装するか判断する | [predictability](references/rust-api-guidelines/src/predictability.md) — 明確なreceiverを持つ処理はmethodに置き、constructor、conversion、operatorを予測可能にする |
-| 引数をborrow・owned・genericのどれで受けるか、trait objectを公開するか判断する | [flexibility](references/rust-api-guidelines/src/flexibility.md) — caller control、generic bound、object safety |
-| primitive引数、boolean、newtype、builder、flag表現を選ぶ | [type safety](references/rust-api-guidelines/src/type-safety.md) — 無効値や引数の取り違えを型で防ぐ条件 |
-| validation、panic条件、destructorの失敗や副作用を設計する | [dependability](references/rust-api-guidelines/src/dependability.md) — input validation、panic、dropの契約 |
-| public typeの`Debug`表現を決める。非空・非exhaustiveな出力を確認する | [debuggability](references/rust-api-guidelines/src/debuggability.md) — `Debug`の可用性と安定性 |
-| downstream互換性、sealed trait、private field、実装表現の隠蔽を判断する | [future proofing](references/rust-api-guidelines/src/future-proofing.md) — 後から拡張できるpublic surface |
-| toolchain安定性、crate名、licenseを公開前に確認する | [necessities](references/rust-api-guidelines/src/necessities.md) — stable Rustとpermissive licenseの基本条件 |
+| Naming types, traits, methods, or modules; checking getter, conversion, iterator, or cost naming | [naming](references/rust-api-guidelines/src/naming.md) — casing, `as_` / `to_` / `into_`, getters, and iterators |
+| Implementing standard traits or designing Serde integration, error types, or `Read` / `Write` interoperability | [interoperability](references/rust-api-guidelines/src/interoperability.md) — common traits, errors, serialization, and I/O expectations |
+| Adding or changing a public macro or derive macro | [macros](references/rust-api-guidelines/src/macros.md) — invocations, attributes, hygiene, diagnostics, and future extensibility |
+| Adding or reviewing rustdoc, examples, failure conditions, or crate metadata | [documentation](references/rust-api-guidelines/src/documentation.md) — crate docs, examples, `# Errors` / `# Panics` / `# Safety`, and metadata |
+| Choosing functions versus methods, constructor representation, or whether to implement `Deref` or operators | [predictability](references/rust-api-guidelines/src/predictability.md) — put operations with a clear receiver on methods and keep constructors, conversions, and operators predictable |
+| Choosing borrowed, owned, or generic arguments, or exposing trait objects | [flexibility](references/rust-api-guidelines/src/flexibility.md) — caller control, generic bounds, and object safety |
+| Choosing primitive arguments, booleans, newtypes, builders, or flag representations | [type safety](references/rust-api-guidelines/src/type-safety.md) — conditions for preventing invalid values and swapped arguments through types |
+| Designing validation, panic conditions, destructor failures, or side effects | [dependability](references/rust-api-guidelines/src/dependability.md) — contracts for validation, panics, and drop |
+| Deciding a public type's `Debug` representation | [debuggability](references/rust-api-guidelines/src/debuggability.md) — useful and stable non-empty output |
+| Evaluating downstream compatibility, sealed traits, private fields, or implementation hiding | [future proofing](references/rust-api-guidelines/src/future-proofing.md) — extensible public surfaces |
+| Checking toolchain stability, crate names, or licenses before publishing | [necessities](references/rust-api-guidelines/src/necessities.md) — stable Rust and permissive-license basics |
 
-API Guidelinesはpublic APIを主対象とするが、読みやすく予測可能な設計の原則はprivate helperやapplication内部にも積極的に適用する。公開互換性や外部利用者を前提とする規則だけを内部codeへ持ち込まない。既存methodを短くすることだけを目的に独立関数へ移さず、明確なreceiver、型のinvariant、状態遷移を扱う処理はその型のmethodに置く。独立関数は、自然なreceiverがない、複数の値を対等に扱う、または型の責務から独立した変換である場合に使う。
+Although the API Guidelines primarily target public APIs, actively apply their readable and predictable design principles to private helpers and application internals. Do not transfer rules that specifically assume public compatibility or external users into internal code. Do not move existing methods into free functions merely to shorten them: keep operations with a clear receiver, type invariants, or state transitions on that type's methods. Use a free function only when no natural receiver exists, multiple values are peers, or the transformation is independent of a type's responsibility.
 
 ### Pragmatic engineering guidelines
 
-実運用を見据えたlibrary、application、workspace、性能、documentation、AI支援向けの判断にはMicrosoft Pragmatic Rust Guidelinesを使う。最初に[checklist](references/microsoft-rust-guidelines/src/guidelines/checklist/README.md)から該当する`M-*`項目を選ぶ。規則は一律の必須条件として扱わず、対象projectの要件、既存convention、互換性、MSRV、deployment環境、profile結果を優先する。特定allocator、`target-cpu`、crate分割、async、builderなどの選択は、適用条件とtrade-offを本文で確認してから採用する。
+For decisions concerning production libraries, applications, workspaces, performance, documentation, or AI-assisted development, use the Microsoft Pragmatic Rust Guidelines. Start with the relevant `M-*` items in the [checklist](references/microsoft-rust-guidelines/src/guidelines/checklist/README.md). Do not treat the rules as universal requirements: prioritize the target project's requirements, existing conventions, compatibility, MSRV, deployment environment, and profiling results. Read the applicable conditions and trade-offs before choosing an allocator, `target-cpu`, crate split, async design, builder, or similar option.
 
-| こういう場合に読む | 参照先と確認内容 |
+| Read when | Reference and check |
 | --- | --- |
-| 命名、function配置、lint抑制、logging、crate分割など横断的な規則を確認する | [universal](references/microsoft-rust-guidelines/src/guidelines/universal/README.md) — upstream規約、static verification、`#[expect]`、短い名前、structured logging |
-| libraryの型、error、I/O、module、builder、testability、featureを設計する | [libraries](references/microsoft-rust-guidelines/src/guidelines/libs/README.md)から[interoperability](references/microsoft-rust-guidelines/src/guidelines/libs/interop/README.md)、[UX](references/microsoft-rust-guidelines/src/guidelines/libs/ux/README.md)、[resilience](references/microsoft-rust-guidelines/src/guidelines/libs/resilience/README.md)、[building](references/microsoft-rust-guidelines/src/guidelines/libs/building/README.md)の該当項目を読む |
-| declarative macroまたはproc macroの必要性、構成、生成surfaceを判断する | [macros](references/microsoft-rust-guidelines/src/guidelines/macros/README.md) — macroを使う条件、helper、impl crate、生成item |
-| binary/applicationのerror、allocator、CPU targetを設計する | [applications](references/microsoft-rust-guidelines/src/guidelines/apps/README.md) — libraryとの違いを確認し、allocatorとtargetはdeployment要件と計測結果で判断する |
-| FFI crateの命名、business logicとの境界、DLL stateを設計する | [FFI](references/microsoft-rust-guidelines/src/guidelines/ffi/README.md) |
-| unsafe、soundness、panicの契約と継続可否を判断する | [correctness](references/microsoft-rust-guidelines/src/guidelines/correctness/README.md) |
-| hot path、allocation、indirection、hash、async stack、telemetry overheadを改善する | [performance](references/microsoft-rust-guidelines/src/guidelines/performance/README.md) — profileとbenchmarkで対象を特定してから適用する |
-| workspace構成、crate配置、edition、MSRVを決める | [project](references/microsoft-rust-guidelines/src/guidelines/project/README.md) |
-| module docs、先頭文、canonical section、re-exportのrustdoc表示を整える | [documentation](references/microsoft-rust-guidelines/src/guidelines/docs/README.md) |
-| AIが変更しやすいRustらしい構造、公開path、test、設計文書を整える | [AI](references/microsoft-rust-guidelines/src/guidelines/ai/README.md) — 人間の可読性とproject方針を保った上で適用する |
+| Checking cross-cutting rules for naming, function placement, lint suppression, logging, or crate splits | [universal](references/microsoft-rust-guidelines/src/guidelines/universal/README.md) — upstream conventions, static verification, `#[expect]`, short names, and structured logging |
+| Designing library types, errors, I/O, modules, builders, testability, or features | Read relevant items from [libraries](references/microsoft-rust-guidelines/src/guidelines/libs/README.md), [interoperability](references/microsoft-rust-guidelines/src/guidelines/libs/interop/README.md), [UX](references/microsoft-rust-guidelines/src/guidelines/libs/ux/README.md), [resilience](references/microsoft-rust-guidelines/src/guidelines/libs/resilience/README.md), and [building](references/microsoft-rust-guidelines/src/guidelines/libs/building/README.md) |
+| Deciding whether to use a declarative or procedural macro and its structure or generated surface | [macros](references/microsoft-rust-guidelines/src/guidelines/macros/README.md) — conditions for macros, helpers, impl crates, and generated items |
+| Designing binary or application errors, allocators, or CPU targets | [applications](references/microsoft-rust-guidelines/src/guidelines/apps/README.md) — distinguish libraries, and decide allocators and targets from deployment requirements and measurements |
+| Designing FFI crate names, boundaries with business logic, or DLL state | [FFI](references/microsoft-rust-guidelines/src/guidelines/ffi/README.md) |
+| Evaluating unsafe code, soundness, panic contracts, or whether execution may continue | [correctness](references/microsoft-rust-guidelines/src/guidelines/correctness/README.md) |
+| Improving a hot path, allocations, indirection, hashing, async stacks, or telemetry overhead | [performance](references/microsoft-rust-guidelines/src/guidelines/performance/README.md) — profile and benchmark before applying changes |
+| Choosing workspace structure, crate placement, editions, or MSRV | [project](references/microsoft-rust-guidelines/src/guidelines/project/README.md) |
+| Improving module docs, opening sentences, canonical sections, or rustdoc re-export display | [documentation](references/microsoft-rust-guidelines/src/guidelines/docs/README.md) |
+| Improving Rust-native structure, public paths, tests, or design documentation for AI changes | [AI](references/microsoft-rust-guidelines/src/guidelines/ai/README.md) — apply while preserving human readability and project policy |
 
 ### Idioms, patterns, and anti-patterns
 
-既存実装を単純化する候補や、導入しようとしているpatternのtrade-offを調べるときに使う。
+Use these references when simplifying existing code or examining the trade-offs of a proposed pattern.
 
-| こういう場合に読む | 参照先と確認内容 |
+| Read when | Reference and check |
 | --- | --- |
-| `&String`、`&Vec<T>`、`&Box<T>`を受けている。APIをborrowed formへ一般化したい | [borrowed arguments](references/rust-design-patterns/src/idioms/coercion-arguments.md) |
-| borrow checkerを通すためだけにcloneしている | [clone anti-pattern](references/rust-design-patterns/src/anti_patterns/borrow_clone.md) — scope、field分割、`mem::take`等の代替を検討する |
-| constructor、`Default`、drop時の後処理、stack上のdynamic dispatchを設計する | [constructor](references/rust-design-patterns/src/idioms/ctor.md)、[Default](references/rust-design-patterns/src/idioms/default.md)、[finalisation](references/rust-design-patterns/src/idioms/dtor-finally.md)、[on-stack dispatch](references/rust-design-patterns/src/idioms/on-stack-dyn-dispatch.md) |
-| `Deref`をmethod forwardingや継承の代用にしようとしている | [collections and Deref](references/rust-design-patterns/src/idioms/deref.md) と [Deref anti-pattern](references/rust-design-patterns/src/anti_patterns/deref.md) |
-| FFIでerror、string、object-style API、wrapperを設計する | [FFI idioms](references/rust-design-patterns/src/idioms/ffi/intro.md) と [FFI patterns](references/rust-design-patterns/src/patterns/ffi/intro.md)から該当項目を読む |
-| newtypeまたはbuilderの導入を検討する | [newtype](references/rust-design-patterns/src/patterns/behavioural/newtype.md)、[builder](references/rust-design-patterns/src/patterns/creational/builder.md) — 利点だけでなく追加される型と状態を確認する |
-| resource cleanup、scope guard、RAIIを設計する | [RAII guards](references/rust-design-patterns/src/patterns/behavioural/RAII.md) |
-| command、strategy、visitor等のbehavioral patternを検討する | [behavioural patterns](references/rust-design-patterns/src/patterns/behavioural/intro.md)から現在必要なpatternだけを読む |
-| structの合成、crate分割、unsafe隔離、複雑なtrait boundの整理を検討する | [structural patterns](references/rust-design-patterns/src/patterns/structural/intro.md)から該当項目を読む |
-| `#[deny(warnings)]`をlibrary方針にしようとしている | [deny warnings anti-pattern](references/rust-design-patterns/src/anti_patterns/deny-warnings.md) |
-| functional styleやgenericをtype classとして扱う設計を検討する | [functional programming](references/rust-design-patterns/src/functional/index.md)から該当項目を読む |
+| Receiving `&String`, `&Vec<T>`, or `&Box<T>` and generalizing an API to its borrowed form | [borrowed arguments](references/rust-design-patterns/src/idioms/coercion-arguments.md) |
+| Cloning only to satisfy the borrow checker | [clone anti-pattern](references/rust-design-patterns/src/anti_patterns/borrow_clone.md) — consider alternatives such as scopes, field splitting, and `mem::take` |
+| Designing constructors, `Default`, cleanup on drop, or on-stack dynamic dispatch | [constructor](references/rust-design-patterns/src/idioms/ctor.md), [Default](references/rust-design-patterns/src/idioms/default.md), [finalisation](references/rust-design-patterns/src/idioms/dtor-finally.md), and [on-stack dispatch](references/rust-design-patterns/src/idioms/on-stack-dyn-dispatch.md) |
+| Using `Deref` for method forwarding or as a substitute for inheritance | [collections and Deref](references/rust-design-patterns/src/idioms/deref.md) and [Deref anti-pattern](references/rust-design-patterns/src/anti_patterns/deref.md) |
+| Designing FFI errors, strings, object-style APIs, or wrappers | Read applicable items from [FFI idioms](references/rust-design-patterns/src/idioms/ffi/intro.md) and [FFI patterns](references/rust-design-patterns/src/patterns/ffi/intro.md) |
+| Considering a newtype or builder | [newtype](references/rust-design-patterns/src/patterns/behavioural/newtype.md) and [builder](references/rust-design-patterns/src/patterns/creational/builder.md) — assess the added types and states as well as benefits |
+| Designing resource cleanup, scope guards, or RAII | [RAII guards](references/rust-design-patterns/src/patterns/behavioural/RAII.md) |
+| Considering behavioral patterns such as command, strategy, or visitor | Read only the currently relevant pattern in [behavioural patterns](references/rust-design-patterns/src/patterns/behavioural/intro.md) |
+| Considering struct composition, crate splits, unsafe isolation, or simplifying complex trait bounds | Read relevant items from [structural patterns](references/rust-design-patterns/src/patterns/structural/intro.md) |
+| Considering `#[deny(warnings)]` as a library policy | [deny warnings anti-pattern](references/rust-design-patterns/src/anti_patterns/deny-warnings.md) |
+| Considering functional style or treating generics as type classes | Read relevant items from [functional programming](references/rust-design-patterns/src/functional/index.md) |
 
 ### Clippy files
 
-| こういう場合に読む | 参照先と確認内容 |
+| Read when | Reference and check |
 | --- | --- |
-| strict runnerが有効にするlintを確認する | [clippy-lints.txt](assets/clippy-lints.txt)を正本として読む |
-| complexityやsizeなどのClippy閾値を確認する | [clippy.toml](assets/clippy.toml)を正本として読む |
-| runnerが上書きする規約や環境設定を確認する | [strict-clippy.sh](scripts/strict-clippy.sh)を正本として読む |
-| lintを修正するか、`#[expect]` / `#[allow]`を置くか判断する | 下の「Strict Clippy」に従う |
-| unsafe codeまたはunsafe関連lintを扱う | [unsafe modules](references/rust-design-patterns/src/patterns/structural/unsafe-mods.md)を読み、安全な代替、境界の隔離、`# Safety`と各`unsafe` blockの根拠を確認する |
+| Checking the lints enabled by the strict runner | Treat [clippy-lints.txt](assets/clippy-lints.txt) as authoritative |
+| Checking Clippy thresholds such as complexity or size | Treat [clippy.toml](assets/clippy.toml) as authoritative |
+| Checking conventions or environment settings overridden by the runner | Treat [strict-clippy.sh](scripts/strict-clippy.sh) as authoritative |
+| Deciding whether to fix a lint or add `#[expect]` / `#[allow]` | Follow Strict Clippy below |
+| Handling unsafe code or unsafe-related lints | Read [unsafe modules](references/rust-design-patterns/src/patterns/structural/unsafe-mods.md); verify safe alternatives, boundary isolation, `# Safety`, and the rationale for every `unsafe` block |
 
 ## Crate guide
 
-次の表は汎用的な候補例であり、推奨crateの固定listではない。まず必要な機能、API、性能、MSRV、feature、`no_std`、licenseなどの要件を明確にする。標準library、既存依存、小さな手書き実装も比較し、現在の反復やerror-proneな実装を減らす場合だけ依存を追加する。
+The table below provides general candidates, not a fixed list of recommended crates. First identify requirements such as needed functionality, API, performance, MSRV, features, `no_std`, and licenses. Compare the standard library, existing dependencies, and small handwritten implementations; add a dependency only when it reduces current repetition or error-prone code.
 
-要件を満たす十分に保守されたcrateが存在するか、導入時点のregistry情報、source repository、release履歴、未解決issue、security advisoryを調査する。下表の候補を採用する場合も、記憶や表の説明だけで実装せず、実装前にregistryの最新releaseと選定versionの最新公式documentationを確認する。現在のAPI、feature flag、default feature、MSRV、互換性やmigration上の注意を読み、projectが固定するversionとdocumentationのversionを一致させる。依存の型、attribute、生成API、wire formatがpublic APIへ露出する影響も確認する。導入後はprojectの固定toolchainで、default、no-default、代表feature、all-features、必要なtargetと`no_std`構成をproject方針に合わせて検証する。
+Research whether a sufficiently maintained crate satisfies the requirements, including the registry information available at adoption time, source repository, release history, open issues, and security advisories. Even when choosing a candidate below, do not implement from memory or this table alone: before implementation, verify the registry's latest release and the current official documentation for the selected version. Read the current API, feature flags, default features, MSRV, and compatibility or migration notes, and align the project's pinned version with the documentation version. Also consider whether dependency types, attributes, generated APIs, or wire formats become exposed through the public API. After adoption, validate default features, no-default-features, representative features, all features, required targets, and `no_std` configurations on the project's pinned toolchain according to project policy.
 
-| 典型的な要求 | 候補例 | 避ける場合 |
+| Typical need | Candidate | Avoid when |
 | --- | --- | --- |
-| library/domainの分類可能なerror | `thiserror` | application最上位の任意error集約 |
-| binary/application最上位のcontext付きerror集約 | `anyhow` | libraryのpublic error type |
-| 外部formatとのserialization | `serde` | 内部型への無差別derive |
-| request、form、config等の複数field・nested・条件付きvalidation | `garde` | 単純な一回限りの検証、またはconstructorや型で常に保証すべきdomain invariant |
-| enumのparse、display、列挙、variant名 | `strum` | 小さな一回限りの`match` |
-| newtype/wrapperの自然なtrait delegation | `derive_more` | 意味のない`Deref`、演算、conversion |
-| 多数の必須・任意値を持つ段階的構築 | `bon` | 少数fieldまたは一箇所だけの構築 |
-| 独立して組み合わせるflag集合 | `bitflags` | 排他的状態やstate machine |
-| 計測可能なzero-copy archive access | `rkyv` | 汎用wire formatや互換性未設計の永続化 |
-| 非同期I/O runtime | `tokio` | library内のruntime生成や同期処理の単なる置換 |
-| cancellation、task追跡、codec、I/O adapter | `tokio-util` | `tokio`だけで十分な処理 |
-| Tokio型を`Stream`として扱う | `tokio-stream` | `Future`や一件の非同期結果 |
-| `dyn` dispatchが必要なasync trait | `async-trait` | static dispatchや標準のtrait内`async fn`で足りる場合 |
-| 非同期処理の構造化された診断 | `tracing` | libraryでのglobal subscriber設定や機密値の記録 |
+| Classifiable library or domain errors | `thiserror` | Aggregating arbitrary top-level application errors |
+| Contextual aggregation of top-level binary or application errors | `anyhow` | A library's public error type |
+| Serialization to or from an external format | `serde` | Blanket derives on internal types |
+| Multi-field, nested, or conditional validation for requests, forms, or configuration | `garde` | One-off simple validation, or domain invariants that constructors or types must always guarantee |
+| Enum parsing, display, enumeration, or variant names | `strum` | A small one-off `match` |
+| Natural trait delegation for a newtype or wrapper | `derive_more` | Meaningless `Deref`, operators, or conversions |
+| Staged construction with many required and optional values | `bon` | Few fields or a single construction site |
+| Independently combinable flag sets | `bitflags` | Exclusive states or state machines |
+| Measurable zero-copy archive access | `rkyv` | General wire formats or persistence without a compatibility plan |
+| Asynchronous I/O runtime | `tokio` | Creating a runtime inside a library or merely replacing synchronous work |
+| Cancellation, task tracking, codecs, or I/O adapters | `tokio-util` | Work sufficiently handled by `tokio` alone |
+| Using Tokio types as `Stream`s | `tokio-stream` | A `Future` or one asynchronous result |
+| Async traits requiring `dyn` dispatch | `async-trait` | Cases covered by static dispatch or standard trait `async fn` |
+| Structured diagnostics in asynchronous work | `tracing` | Global subscriber setup in a library or recording sensitive values |
 
 ## Strict Clippy
 
-- runnerは受け取ったoptionを`cargo clippy`へ透過し、その後に規約lintを渡す。例えば全featureを検証するときは`strict-clippy.sh --all-features`を実行する。`--fix`は使わない。標準出力と標準エラーは加工せず引き渡す。続けて、project固有の通常のClippy commandを別に実行する。
-- lintは実害があれば修正する。意図したcodeは最小itemに具体的な`reason`付き`#[expect]`を置き、`cfg`やtoolchain差で不安定な場合だけ`#[allow]`を使う。
-- crate全体のlint group抑制や、理由のないlint抑制を使わない。testのpanic、unwrap、indexing、標準出力も自動許可しない。
+- The runner passes received options through to `cargo clippy`, then supplies its policy lints. For example, run `strict-clippy.sh --all-features` to validate all features. Do not use `--fix`. It passes standard output and standard error through unchanged. Then run the project's normal Clippy command separately.
+- Fix lints that indicate a real problem. For intentional code, place a specific `#[expect]` with a `reason` on the smallest item; use `#[allow]` only when `cfg` or toolchain differences make the lint unstable.
+- Do not suppress crate-wide lint groups or suppress lints without a reason. Do not automatically permit panics, unwraps, indexing, or standard output in tests.
 
 ## Completion
 
-- 変更したpublic/private codeの命名、責務、制御flow、所有権を読み手が局所的に理解できる。
-- 変更に該当するAPI Guidelinesのchecklist項目を確認し、内部codeにも有効な規則を適用した。
-- 変更に該当するPragmatic Rust Guidelinesの`M-*`項目を確認し、project要件や計測結果と矛盾する規則を無条件に適用していない。
-- 追加したstruct、trait、newtype、builder、helper、dependencyの必要性を説明できる。
-- 追加した独立関数に自然なreceiverがなく、既存methodを短くするためだけの分割ではない。
-- 追加・更新したcrateについて、registryの最新releaseと選定versionの公式documentationを確認した。
-- public API、MSRV、feature、`no_std`、generated APIの互換性を確認した。
-- error、panic、validation、unsafe、async境界の契約をcallerに明確にした。
-- 不要なallocation、clone、boxing、reference counting、interior mutability、lint抑制を増やしていない。
+- A reader can understand the naming, responsibility, control flow, and ownership of changed public or private code locally.
+- Relevant API Guidelines checklist items have been checked, including rules applicable to internal code.
+- Relevant `M-*` Pragmatic Rust Guidelines items have been checked, without unconditionally applying rules that conflict with project requirements or measurements.
+- You can explain the need for every added struct, trait, newtype, builder, helper, or dependency.
+- Every added free function has no natural receiver and was not extracted merely to shorten an existing method.
+- For each added or updated crate, you verified the registry's latest release and the official documentation for the selected version.
+- You checked compatibility of the public API, MSRV, features, `no_std`, and generated APIs.
+- You made contracts for errors, panics, validation, unsafe code, and async boundaries clear to callers.
+- You did not add unnecessary allocations, clones, boxing, reference counting, interior mutability, or lint suppression.

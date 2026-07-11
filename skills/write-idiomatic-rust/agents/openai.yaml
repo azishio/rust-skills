@@ -1,4 +1,4 @@
 interface:
   display_name: "Idiomatic Rust"
-  short_description: "公開・内部を問わずクリーンなRustコードを設計・レビュー"
-  default_prompt: "$write-idiomatic-rust を使って、公開APIと内部実装の両方を可読性が高く慣用的で保守しやすいRustコードとして実装・レビューしてください。"
+  short_description: "Design and review clean Rust for public and internal code"
+  default_prompt: "Use $write-idiomatic-rust to implement and review readable, idiomatic, maintainable Rust across both public APIs and internal implementations."
