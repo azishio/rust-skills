@@ -6,3 +6,7 @@
 	path = skills/write-idiomatic-rust/references/rust-design-patterns
 	url = https://github.com/rust-unofficial/patterns.git
 	branch = main
+[submodule "skills/write-idiomatic-rust/references/microsoft-rust-guidelines"]
+	path = skills/write-idiomatic-rust/references/microsoft-rust-guidelines
+	url = https://github.com/microsoft/rust-guidelines.git
+	branch = main

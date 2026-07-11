@@ -6,7 +6,7 @@ Rust向けのCodex skillを保守・公開するrepositoryです。実装するs
 
 ### `write-idiomatic-rust`
 
-Rustコードの実装、修正、レビュー、リファクタリングで、公開APIと内部実装を同じ品質基準で扱うskillです。Rust API GuidelinesとRust Design Patternsから変更に該当する規則を参照し、命名、関数とmethodの配置、型・所有権・error設計、可読性、予測可能性を確認します。strict Clippy runnerはproject固有のClippyを置き換えず、追加のreview基準として実行します。
+Rustコードの実装、修正、レビュー、リファクタリングで、公開APIと内部実装を同じ品質基準で扱うskillです。Rust API Guidelines、Microsoft Pragmatic Rust Guidelines、Rust Design Patternsから変更に該当する規則を参照し、命名、関数とmethodの配置、型・所有権・error設計、可読性、予測可能性を確認します。strict Clippy runnerはproject固有のClippyを置き換えず、追加のreview基準として実行します。
 
 Crate guideは依存の固定推奨listではなく、標準library、既存依存、小さな手書き実装と比較するための候補を示します。`garde`はrequest、form、config等の複数field・nested・条件付きvalidationの候補です。候補crateを採用するときは、実装前にregistryの最新releaseと選定versionの公式documentationを確認し、API、feature、MSRV、互換性をprojectの要件と照合します。
 
@@ -22,7 +22,7 @@ just setup
 
 ## 参照資料の更新
 
-`just update-references`はRust API GuidelinesとRust Design Patternsの追跡ブランチ先端へsubmoduleを更新します。この操作で親repositoryのgitlinkが変更されるため、内容を確認してから親repositoryへcommitしてください。通常の`just setup`は記録済みrevisionへ戻すため、再現可能なskill利用環境を提供します。
+`just update-references`はRust API Guidelines、Microsoft Pragmatic Rust Guidelines、Rust Design Patternsの追跡ブランチ先端へsubmoduleを更新します。この操作で親repositoryのgitlinkが変更されるため、内容を確認してから親repositoryへcommitしてください。通常の`just setup`は記録済みrevisionへ戻すため、再現可能なskill利用環境を提供します。
 
 ## 構成
 
@@ -33,6 +33,7 @@ just setup
 ## Upstream references
 
 - `rust-lang/api-guidelines` (`master`): Rust API Guidelines。Apache-2.0 または MIT。
+- `microsoft/rust-guidelines` (`main`): Pragmatic Rust Guidelines。MIT。
 - `rust-unofficial/patterns` (`main`): Rust Design Patterns。MPL-2.0。
 
 それぞれの固定revisionは親repositoryのgitlinkに記録されます。source、revision、licenseの保守情報はこのREADMEと`.gitmodules`で管理し、skill本体には含めません。
