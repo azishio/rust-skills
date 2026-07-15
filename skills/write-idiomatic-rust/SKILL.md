@@ -12,8 +12,16 @@ Apply the same standards of readability, predictability, type safety, and mainta
 1. Inspect `Cargo.toml`, the workspace, visibility, edition, `rust-version`, features, `no_std`, existing dependencies, and relevant tests.
 2. Identify every affected API, type, ownership boundary, error, function or method placement, and construction path, whether public or private. Prefer existing names and conventions.
 3. Use the Reference guide below to actively select the checklist items and files relevant to the change. Apply the same design standards to internal implementations except for rules that apply only to public APIs. Evaluate opinionated Pragmatic Rust Guidelines against project requirements and measurements; read both benefits and drawbacks for patterns.
-4. Implement the smallest design that lets readers follow responsibility, data flow, and ownership, while preserving behavior and public compatibility. Do not add helpers, traits, types, or modules merely for brevity or possible reuse. If a breaking change is required, state its impact and migration path.
+4. Implement the smallest design that lets readers follow responsibility, data flow, and ownership, while preserving behavior and public compatibility. Prefer declarative data flow as described below. Do not add helpers, traits, types, or modules merely for brevity or possible reuse. If a breaking change is required, state its impact and migration path.
 5. From the target project's root, run `<skill-root>/scripts/strict-clippy.sh`. Pass needed workspace, package, target, and feature options to the runner. Then run the normal Clippy command required by the project or workspace, and validate formatting, tests, and the feature matrix according to project policy.
+
+## Declarative data flow
+
+Prefer describing what value to compute over spelling out step-by-step mutation when both forms remain clear. Use expressions, iterator adapters, and `Option` or `Result` combinators whose names communicate the operation. Prefer specific operations such as `map`, `filter_map`, `find`, `any`, `all`, `sum`, `collect`, and `partition` over manual accumulator loops or a generic `fold` when a specific operation fits.
+
+Keep pipelines short enough to read locally. Name meaningful intermediate values when a chain obscures domain intent, ownership, error types, or control flow. Preserve laziness where useful, and do not introduce intermediate allocations, clones, or boxing merely to maintain a pipeline.
+
+Use `match`, explicit loops, and local mutation when they make state transitions, side effects, borrowing, multiple accumulators, early exits, or measured hot paths clearer. Do not hide imperative work inside closures or force combinators when they increase nesting or make error handling less direct. Treat declarative style as the default preference and explain a materially more imperative design when the reason is not evident from the code.
 
 ## Reference guide
 
@@ -72,7 +80,7 @@ Use these references when simplifying existing code or examining the trade-offs 
 | Considering behavioral patterns such as command, strategy, or visitor | Read only the currently relevant pattern in [behavioural patterns](references/rust-design-patterns/src/patterns/behavioural/intro.md) |
 | Considering struct composition, crate splits, unsafe isolation, or simplifying complex trait bounds | Read relevant items from [structural patterns](references/rust-design-patterns/src/patterns/structural/intro.md) |
 | Considering `#[deny(warnings)]` as a library policy | [deny warnings anti-pattern](references/rust-design-patterns/src/anti_patterns/deny-warnings.md) |
-| Considering functional style or treating generics as type classes | Read relevant items from [functional programming](references/rust-design-patterns/src/functional/index.md) |
+| Choosing declarative versus imperative data flow, or treating generics as type classes | Read relevant items from [functional programming](references/rust-design-patterns/src/functional/index.md), starting with [programming paradigms](references/rust-design-patterns/src/functional/paradigms.md) |
 
 ### Clippy files
 
@@ -116,6 +124,7 @@ Research whether a sufficiently maintained crate satisfies the requirements, inc
 ## Completion
 
 - A reader can understand the naming, responsibility, control flow, and ownership of changed public or private code locally.
+- Declarative expressions and transformations were preferred where they communicate intent clearly; imperative control flow has a concrete readability, ownership, side-effect, or performance reason.
 - Relevant API Guidelines checklist items have been checked, including rules applicable to internal code.
 - Relevant `M-*` Pragmatic Rust Guidelines items have been checked, without unconditionally applying rules that conflict with project requirements or measurements.
 - You can explain the need for every added struct, trait, newtype, builder, helper, or dependency.
