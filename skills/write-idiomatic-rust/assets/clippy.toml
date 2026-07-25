@@ -32,10 +32,10 @@ check-private-items = true
 check-incompatible-msrv-in-tests = true
 
 # Audit tests with the same panic, indexing, output, and debugging policy as
-# production code. Individual tests may use a narrow exception with a reason
-# that states the fixture or assertion invariant.
+# production code. `expect` is allowed in tests when its message documents a
+# fixture or assertion invariant.
 allow-dbg-in-tests = false
-allow-expect-in-tests = false
+allow-expect-in-tests = true
 allow-indexing-slicing-in-tests = false
 allow-panic-in-tests = false
 allow-print-in-tests = false
