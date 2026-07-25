@@ -1,7 +1,7 @@
 -Dwarnings
 -Dclippy::all
 -Dclippy::pedantic
--Dclippy::nursery
+-Wclippy::nursery
 -Dclippy::cargo
 -Dfuture_incompatible
 -Dmissing_debug_implementations
@@ -22,8 +22,8 @@
 -Dclippy::empty_drop
 -Dclippy::empty_structs_with_brackets
 -Dclippy::error_impl_error
--Dclippy::exhaustive_enums
--Dclippy::exhaustive_structs
+-Wclippy::exhaustive_enums
+-Wclippy::exhaustive_structs
 -Dclippy::expect_used
 -Dclippy::exit
 -Dclippy::filetype_is_file
@@ -36,7 +36,8 @@
 -Dclippy::map_err_ignore
 -Dclippy::mem_forget
 -Dclippy::missing_assert_message
--Dclippy::multiple_inherent_impl
+-Dclippy::missing_docs_in_private_items
+-Wclippy::multiple_inherent_impl
 -Dclippy::multiple_unsafe_ops_per_block
 -Dclippy::panic
 -Dclippy::panic_in_result_fn
@@ -47,13 +48,12 @@
 -Dclippy::rc_mutex
 -Dclippy::ref_patterns
 -Dclippy::same_name_method
--Dclippy::single_call_fn
+-Wclippy::single_call_fn
 -Dclippy::string_add
 -Dclippy::string_slice
 -Dclippy::todo
 -Dclippy::undocumented_unsafe_blocks
 -Dclippy::unimplemented
--Dclippy::unnecessary_wraps
 -Dclippy::unreachable
 -Dclippy::unwrap_in_result
 -Dclippy::unwrap_used
