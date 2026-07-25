@@ -125,7 +125,7 @@ Research whether a sufficiently maintained crate satisfies the requirements, inc
 - Treat findings configured at warning level as review candidates: assess them against the target project's requirements, MSRV, public-API compatibility, measurements, and local conventions. Do not change code, add an abstraction, or add a lint exception solely to silence such a warning; preserve a clearer or compatible design when that is the better trade-off.
 - In tests, `expect` is permitted when its message states the fixture or assertion invariant. Keep production code subject to the normal `expect_used` policy.
 - Fix lints that indicate a real problem. For intentional code, place a specific `#[expect]` with a `reason` on the smallest item; use `#[allow]` only when `cfg` or toolchain differences make the lint unstable.
-- Do not suppress crate-wide lint groups or suppress lints without a reason. Do not automatically permit panics, unwraps, indexing, or standard output in tests.
+- Do not suppress crate-wide lint groups or suppress lints without a reason. Follow the configured test allowances while keeping fixtures and assertions clear.
 
 ## Completion
 
