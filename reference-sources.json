@@ -6,21 +6,31 @@
       "repository": "https://github.com/rust-lang/api-guidelines.git",
       "revision": "97a0969cb07fe4cabb0eed8a56234053f47d83dc",
       "license": "Apache-2.0 OR MIT",
-      "includes": ["src", "LICENSE-APACHE", "LICENSE-MIT"]
+      "includes": [
+        "src",
+        "LICENSE-APACHE",
+        "LICENSE-MIT"
+      ]
     },
     {
       "path": "microsoft-rust-guidelines",
       "repository": "https://github.com/microsoft/rust-guidelines.git",
       "revision": "95ac4c828fb8034853f332c729207a9fe5ab9cdc",
       "license": "MIT",
-      "includes": ["src", "LICENSE.md"]
+      "includes": [
+        "src",
+        "LICENSE.md"
+      ]
     },
     {
       "path": "rust-design-patterns",
       "repository": "https://github.com/rust-unofficial/patterns.git",
       "revision": "f279f3541c37f3cc36ac6c95ba09465c70ad5271",
       "license": "MPL-2.0",
-      "includes": ["src", "LICENSE"]
+      "includes": [
+        "src",
+        "LICENSE"
+      ]
     }
   ]
 }
