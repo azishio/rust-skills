@@ -36,6 +36,7 @@
 -Dclippy::map_err_ignore
 -Dclippy::mem_forget
 -Dclippy::missing_assert_message
+-Dclippy::missing_docs_in_private_items
 -Wclippy::multiple_inherent_impl
 -Dclippy::multiple_unsafe_ops_per_block
 -Dclippy::panic
