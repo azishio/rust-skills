@@ -1,7 +1,7 @@
 # Third-party notices
 
 The licenses in the repository root apply only to files authored for this
-repository. They do not grant rights in the reference submodules below.
+repository. They do not grant rights in the vendored references below.
 
 | Path | Upstream | License |
 | --- | --- | --- |
@@ -9,7 +9,8 @@ repository. They do not grant rights in the reference submodules below.
 | `skills/write-idiomatic-rust/references/microsoft-rust-guidelines` | [`microsoft/rust-guidelines`](https://github.com/microsoft/rust-guidelines) | MIT |
 | `skills/write-idiomatic-rust/references/rust-design-patterns` | [`rust-unofficial/patterns`](https://github.com/rust-unofficial/patterns) | MPL-2.0 |
 
-Each submodule is pinned to a commit recorded by the superproject. Its
-upstream license text is retained in the initialized submodule. Anyone
-distributing an archive, package, or other artifact that includes reference
-material must retain the applicable upstream license texts and notices.
+The exact upstream revisions and included paths are recorded in
+`reference-sources.json`. Each reference retains
+its applicable upstream license text. Anyone distributing an archive, package,
+or other artifact that includes reference material must retain the applicable
+license texts and notices.

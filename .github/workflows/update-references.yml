@@ -1,0 +1,59 @@
+name: Update vendored references
+
+on:
+  schedule:
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-vendored-references
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch upstream references
+        run: |
+          set -euo pipefail
+          git clone --depth=1 --filter=blob:none --sparse https://github.com/rust-lang/api-guidelines.git .upstream/rust-api-guidelines
+          git -C .upstream/rust-api-guidelines sparse-checkout set --no-cone /src/ /LICENSE-APACHE /LICENSE-MIT
+          git clone --depth=1 --filter=blob:none --sparse https://github.com/microsoft/rust-guidelines.git .upstream/microsoft-rust-guidelines
+          git -C .upstream/microsoft-rust-guidelines sparse-checkout set --no-cone /src/ /LICENSE.md
+          git clone --depth=1 --filter=blob:none --sparse https://github.com/rust-unofficial/patterns.git .upstream/rust-design-patterns
+          git -C .upstream/rust-design-patterns sparse-checkout set --no-cone /src/ /LICENSE
+
+      - name: Vendor references and record sources
+        run: |
+          set -euo pipefail
+          reference_root=skills/write-idiomatic-rust/references
+          rm -rf "$reference_root/rust-api-guidelines" "$reference_root/microsoft-rust-guidelines" "$reference_root/rust-design-patterns"
+          cp -a .upstream/rust-api-guidelines "$reference_root/rust-api-guidelines"
+          cp -a .upstream/microsoft-rust-guidelines "$reference_root/microsoft-rust-guidelines"
+          cp -a .upstream/rust-design-patterns "$reference_root/rust-design-patterns"
+          rm -rf "$reference_root/rust-api-guidelines/.git" "$reference_root/microsoft-rust-guidelines/.git" "$reference_root/rust-design-patterns/.git"
+          jq -n \
+            --arg api_revision "$(git -C .upstream/rust-api-guidelines rev-parse HEAD)" \
+            --arg microsoft_revision "$(git -C .upstream/microsoft-rust-guidelines rev-parse HEAD)" \
+            --arg patterns_revision "$(git -C .upstream/rust-design-patterns rev-parse HEAD)" \
+            '{schemaVersion: 1, sources: [
+              {path: "rust-api-guidelines", repository: "https://github.com/rust-lang/api-guidelines.git", revision: $api_revision, license: "Apache-2.0 OR MIT", includes: ["src", "LICENSE-APACHE", "LICENSE-MIT"]},
+              {path: "microsoft-rust-guidelines", repository: "https://github.com/microsoft/rust-guidelines.git", revision: $microsoft_revision, license: "MIT", includes: ["src", "LICENSE.md"]},
+              {path: "rust-design-patterns", repository: "https://github.com/rust-unofficial/patterns.git", revision: $patterns_revision, license: "MPL-2.0", includes: ["src", "LICENSE"]}
+            ]}' > reference-sources.json
+
+      - name: Commit reference updates
+        run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add skills/write-idiomatic-rust/references reference-sources.json
+          git commit -m "chore(references): update vendored sources"
+          git push

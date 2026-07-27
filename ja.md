@@ -2,7 +2,7 @@
 
 [English](README.md) | [日本語](ja.md)
 
-Rust Skillsは、Rust向けのCodex skillを保守・公開するrepositoryです。実装するskillは[`skills/`](skills/)に置き、repository全体の利用方法と保守手順はこのREADMEと[`justfile`](justfile)に集約します。
+Rust Skillsは、Rust向けのCodex skillを保守・公開するrepositoryです。実装するskillは[`skills/`](skills/)に置き、repository全体の利用方法と保守手順はこのREADMEとGitHub Actionsに集約します。
 
 ## 収録skill
 
@@ -15,44 +15,30 @@ Crate guideは依存の固定推奨listではなく、標準library、既存依�
 ## セットアップ
 
 ```bash
-git clone --recurse-submodules <repository-url>
-cd rust-skills
-just setup
+npx skills add azishio/rust-skills --skill write-idiomatic-rust
 ```
 
-`just setup`はsubmoduleを親repositoryで記録されたrevisionへ初期化し、各upstreamで必要な`src/`とlicense textだけをsparse checkoutします。これらのsubmoduleはskillの実行に必要なreferenceであり、配布・インストール時には必ず初期化済みにします。インストール済みskillはJust recipeを実行しません。
+`skills` CLIは`skills/`配下のskillを検出し、必要なreferenceを含む追跡済みsupport fileをすべてinstallします。全projectで利用する場合は`--global`、特定agentを指定する場合は`--agent <agent>`、symlinkを使えない場合は`--copy`を指定します。
 
-## ユーザーskillとしてのインストール
+## Maintainer向けセットアップ
 
-このrepositoryは、実行に必要なreferenceをsubmoduleで管理しています。skill directoryだけをcloneしたりsource archiveをdownloadしたりすると、gitlink directoryの中身がないため、不完全な状態になります。次のrecipeは一意の名前のdirectoryを`/tmp`に作成し、submoduleを初期化した後、Git metadataを除外して完成したskillをcopyします。
-
-```bash
-just install-user-skill
-```
-
-既定のinstall rootは`~/.agents/skills`であり、skillは`~/.agents/skills/write-idiomatic-rust`へinstallされます。異なるinstall rootを使う場合は、引数で指定してください。
-
-```bash
-just install-user-skill /path/to/skills
-```
-
-recipeは、install先のskill directoryが既に存在する場合は意図的に失敗し、終了時にtemporary cloneを削除します。Codexは次のturnからinstall済みskillを検出します。
+repositoryを通常どおりcloneしてください。追跡済みreferenceはそのままlocal validationに使用でき、`skills add`によるinstallにも含まれます。
 
 ## 参照資料の更新
 
-`just update-references`はRust API Guidelines、Microsoft Pragmatic Rust Guidelines、Rust Design Patternsの追跡ブランチ先端へsubmoduleを更新します。この操作で親repositoryのgitlinkが変更されるため、内容を確認してからcommitしてください。通常の`just setup`は記録済みrevisionへ戻すため、再現可能なskill利用環境を提供します。
+GitHub Actionsは毎週月曜日にRust API Guidelines、Microsoft Pragmatic Rust Guidelines、Rust Design Patternsから必要な`src/` directoryとlicense textをvendorします。差分がある場合は、正確なsource commitを[`reference-sources.json`](reference-sources.json)へ記録して自動commit・pushします。必要に応じてActionsの`workflow_dispatch`で手動実行してください。
 
 ## 構成
 
 - `skills/`: 配布するagent向けskill。各skillには実行指示、agentが参照する資料、補助scriptだけを置く。
-- `justfile`: clone後の初期化、参照資料の更新、sparse checkout設定。
+- `.github/workflows/update-references.yml`: 毎週実行するreference更新自動化。
 - `README.md` と `ja.md`: 英語版・日本語版の人間向け導入・保守情報。
 
 ## License
 
 このrepositoryで作成したfileは、[MIT License](LICENSE-MIT) または [Apache License, Version 2.0](LICENSE-APACHE) のいずれかを、利用者の選択で適用できるdual licenseとします。contributionも、明示的に別条件を指定しない限り同じ条件で受け入れます。
 
-`skills/write-idiomatic-rust/references/` 配下のsubmoduleは独立したupstream projectであり、上記licenseの対象外です。各submoduleのライセンスと配布時の注意は[Third-party notices](THIRD_PARTY_NOTICES.md)を確認してください。referenceを含むarchiveやpackageを配布するときは、submoduleを初期化し、含まれるupstreamのlicense textとnoticeを保持してください。
+`skills/write-idiomatic-rust/references/` 配下のvendor済みreferenceは独立したupstream projectであり、上記licenseの対象外です。配布時は[Third-party notices](THIRD_PARTY_NOTICES.md)と各referenceに保持したlicense textを確認してください。
 
 ## Upstream references
 
@@ -60,4 +46,4 @@ recipeは、install先のskill directoryが既に存在する場合は意図的�
 - `microsoft/rust-guidelines` (`main`): Pragmatic Rust Guidelines。MIT。
 - `rust-unofficial/patterns` (`main`): Rust Design Patterns。MPL-2.0。
 
-それぞれの固定revisionは親repositoryのgitlinkに記録されます。source、revision、licenseの保守情報はこのREADME、`.gitmodules`、[Third-party notices](THIRD_PARTY_NOTICES.md)で管理し、skill本体には含めません。
+それぞれのvendor済みrevision、source、license、含めるpathは[`reference-sources.json`](reference-sources.json)に記録します。

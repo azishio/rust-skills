@@ -3,8 +3,8 @@
 [English](README.md) | [日本語](ja.md)
 
 Rust Skills maintains and publishes Codex skills for Rust. Installable skills live
-in [`skills/`](skills/); this README and the [`justfile`](justfile) contain the
-repository's maintainer documentation and setup procedures.
+in [`skills/`](skills/); this README and the repository's GitHub Actions contain
+maintainer documentation and automation procedures.
 
 ## Included skill
 
@@ -29,55 +29,32 @@ compatibility with the project's requirements.
 ## Setup
 
 ```bash
-git clone --recurse-submodules <repository-url>
-cd rust-skills
-just setup
+npx skills add azishio/rust-skills --skill write-idiomatic-rust
 ```
 
-`just setup` initializes submodules at the revisions recorded by the
-superproject, then sparse-checks out the required `src/` directories and their
-license texts. These submodules are runtime reference material for the skill and
-must be initialized before packaging or installing it. Installed skills do not
-run Just recipes.
+The `skills` CLI discovers the skill under `skills/` and installs all of its
+tracked support files, including the required reference material. Use `--global`
+to install it for every project, `--agent <agent>` to target a specific agent,
+and `--copy` where symlinks are unsuitable.
 
-## Install as a user skill
+## Maintainer setup
 
-This repository uses submodules for required reference material. Cloning only
-the skill directory, or downloading a source archive, leaves gitlink directories
-without their contents and produces an incomplete installation. The recipe below
-creates a uniquely named directory under `/tmp`, initializes its submodules,
-then copies the completed skill without its Git metadata.
-
-```bash
-just install-user-skill
-```
-
-The default installation root is `~/.agents/skills`, so the skill is installed
-to `~/.agents/skills/write-idiomatic-rust`. Pass a different root as an argument
-when needed:
-
-```bash
-just install-user-skill /path/to/skills
-```
-
-The recipe intentionally fails if the destination skill directory already
-exists and removes the temporary clone on exit. Codex discovers the installed
-skill on the next turn.
+Clone the repository normally. The tracked reference files are ready for local
+validation and are included in every `skills add` installation.
 
 ## Updating references
 
-`just update-references` advances the Rust API Guidelines, Microsoft Pragmatic
-Rust Guidelines, and Rust Design Patterns submodules to the tips of their
-tracked branches. It changes the superproject's gitlinks, so review the result
-before committing it. In contrast, ordinary `just setup` returns submodules to
-their recorded revisions for reproducible skill use.
+GitHub Actions vendors the required `src/` directories and license texts from
+Rust API Guidelines, Microsoft Pragmatic Rust Guidelines, and Rust Design
+Patterns every Monday. When changes exist, it records the exact source commits
+in [`reference-sources.json`](reference-sources.json), then commits and pushes
+them automatically. Use workflow dispatch for an intentional manual refresh.
 
 ## Layout
 
 - `skills/`: distributable agent skills, each containing only execution
   instructions, agent reference material, and helper scripts.
-- `justfile`: post-clone initialization, reference updates, and sparse-checkout
-  settings.
+- `.github/workflows/update-references.yml`: weekly reference update automation.
 - `README.md` and `ja.md`: maintainer and user documentation in English and
   Japanese.
 
@@ -88,12 +65,10 @@ Files authored for this repository are dual-licensed under either the
 at the recipient's option. Unless explicitly stated otherwise, contributions are
 accepted under the same terms.
 
-The submodules under `skills/write-idiomatic-rust/references/` are independent
-upstream projects and are not covered by these licenses. See
-[Third-party notices](THIRD_PARTY_NOTICES.md) for their licenses and distribution
-requirements. When distributing an archive or package containing reference
-material, initialize its submodules and retain their applicable license texts
-and notices.
+The vendored references under `skills/write-idiomatic-rust/references/` are
+independent upstream projects and are not covered by these licenses. See
+[Third-party notices](THIRD_PARTY_NOTICES.md) and the license texts retained
+beside each reference before redistributing them.
 
 ## Upstream references
 
@@ -101,6 +76,5 @@ and notices.
 - `microsoft/rust-guidelines` (`main`): Pragmatic Rust Guidelines; MIT.
 - `rust-unofficial/patterns` (`main`): Rust Design Patterns; MPL-2.0.
 
-The superproject records each pinned revision as a gitlink. This README,
-`.gitmodules`, and [Third-party notices](THIRD_PARTY_NOTICES.md) maintain the
-source, revision, and license information rather than embedding it in the skill.
+The exact vendored revision, source, license, and included paths are recorded
+in [`reference-sources.json`](reference-sources.json).
