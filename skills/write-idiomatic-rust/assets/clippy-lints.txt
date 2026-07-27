@@ -48,7 +48,6 @@
 -Dclippy::rc_mutex
 -Dclippy::ref_patterns
 -Dclippy::same_name_method
--Wclippy::single_call_fn
 -Dclippy::string_add
 -Dclippy::string_slice
 -Dclippy::todo
