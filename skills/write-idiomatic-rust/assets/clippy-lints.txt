@@ -1,8 +1,6 @@
--Dwarnings
 -Dclippy::all
 -Dclippy::pedantic
 -Wclippy::nursery
--Dclippy::cargo
 -Dfuture_incompatible
 -Dmissing_debug_implementations
 -Dmissing_docs
@@ -59,4 +57,3 @@
 -Dclippy::unused_result_ok
 -Dclippy::use_debug
 -Dclippy::wildcard_enum_match_arm
--Aclippy::multiple_crate_versions

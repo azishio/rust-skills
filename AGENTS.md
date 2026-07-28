@@ -20,10 +20,10 @@
 
 GitHub Actions refreshes vendored references every Monday and records their source lock. Use its workflow dispatch only for an intentional upstream update.
 
-When the workflow changes any vendored reference, update `skills/write-idiomatic-rust/SKILL.md` in the same change:
+When the workflow changes any vendored reference, update `skills/write-idiomatic-rust/SKILL.md` and the first-party guides directly under `skills/write-idiomatic-rust/references/` in the same change:
 
-1. Compare the current `src/SUMMARY.md` files and linked reference paths with its `Reference guide`.
+1. Compare the current `src/SUMMARY.md` files with the routes linked from the skill and its first-party guides.
 2. Update, add, or remove routes for renamed, moved, added, or deleted upstream sections.
-3. Check every Markdown link in the guide resolves in the vendored references.
+3. Check every Markdown link in the skill and first-party guides resolves to its intended local target.
 
 Run the skill validator after changing references or the skill instructions.

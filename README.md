@@ -18,13 +18,13 @@ placement, types, ownership, error design, readability, and predictability.
 The strict Clippy runner complements rather than replaces a project's own
 Clippy command.
 
-The crate guide is not a fixed list of recommended dependencies. It offers
-examples to compare with the standard library, existing dependencies, and
-small hand-written implementations. For example, `garde` may suit multi-field,
-nested, or conditional validation for requests, forms, and configuration. Before
-adopting any candidate crate, check the latest registry release and the official
-documentation for the selected version, then match its API, features, MSRV, and
-compatibility with the project's requirements.
+The dependency selection guide is not a fixed list of recommended
+dependencies. It offers examples to compare with the standard library, existing
+dependencies, and small hand-written implementations. For example, `garde` may
+suit multi-field, nested, or conditional validation for requests, forms, and
+configuration. Before adopting any candidate crate, check the latest registry
+release and the official documentation for the selected version, then match its
+API, features, MSRV, and compatibility with the project's requirements.
 
 ## Setup
 

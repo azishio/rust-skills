@@ -20,10 +20,10 @@
 
 GitHub Actionsは毎週月曜日にvendor済みreferenceとsource lockを更新する。意図的なupstream更新に限りworkflow dispatchを使用する。
 
-workflowがいずれかのvendor済みreferenceを変更した場合、同じ変更で`skills/write-idiomatic-rust/SKILL.md`を更新する。
+workflowがいずれかのvendor済みreferenceを変更した場合、同じ変更で`skills/write-idiomatic-rust/SKILL.md`と`skills/write-idiomatic-rust/references/`直下のfirst-party guideを更新する。
 
-1. 現在の`src/SUMMARY.md`と、skillの`Reference guide`からリンクする参照pathを比較する。
+1. 現在の`src/SUMMARY.md`と、skillおよびfirst-party guideからリンクするrouteを比較する。
 2. upstreamでrename、移動、追加、削除されたsectionに応じて、routeを更新、追加、削除する。
-3. guideのすべてのMarkdown linkが、vendor済みreference内で解決することを確認する。
+3. skillとfirst-party guideのすべてのMarkdown linkが、意図したlocal targetへ解決することを確認する。
 
 referenceまたはskill instructionを変更した後は、skill validatorを実行する。

@@ -4,12 +4,25 @@ set -euo pipefail
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 export CLIPPY_CONF_DIR="$script_dir/../assets"
 lint_args_file="$CLIPPY_CONF_DIR/clippy-lints.txt"
+publish_lint_args_file="$CLIPPY_CONF_DIR/clippy-publish-lints.txt"
 
-if [[ ! -f "$CLIPPY_CONF_DIR/clippy.toml" || ! -f "$lint_args_file" ]]; then
+if [[ ! -f "$CLIPPY_CONF_DIR/clippy.toml" ||
+  ! -f "$lint_args_file" ||
+  ! -f "$publish_lint_args_file" ]]; then
   printf 'strict-clippy.sh: missing Clippy configuration in %s\n' "$CLIPPY_CONF_DIR" >&2
   exit 1
 fi
 
 mapfile -t lint_args <"$lint_args_file"
+publish_lint_args=()
+cargo_args=()
 
-exec cargo clippy "$@" -- "${lint_args[@]}"
+for arg in "$@"; do
+  if [[ "$arg" == "--publishable" ]]; then
+    mapfile -t publish_lint_args <"$publish_lint_args_file"
+  else
+    cargo_args+=("$arg")
+  fi
+done
+
+exec cargo clippy "${cargo_args[@]}" -- "${lint_args[@]}" "${publish_lint_args[@]}"

@@ -1,0 +1,2 @@
+-Dclippy::cargo
+-Aclippy::multiple_crate_versions

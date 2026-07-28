@@ -1,5 +1,6 @@
 # strict-clippy.sh points CLIPPY_CONF_DIR here to override project configuration.
-# Lint levels live in clippy-lints.txt because this file configures behavior.
+# Lint levels live in clippy-lints.txt and clippy-publish-lints.txt because this
+# file configures behavior.
 
 # Review public APIs too. Never apply a breaking suggestion mechanically.
 avoid-breaking-exported-api = false
