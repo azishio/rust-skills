@@ -25,4 +25,4 @@ for arg in "$@"; do
   fi
 done
 
-exec cargo clippy "${cargo_args[@]}" -- "${lint_args[@]}" "${publish_lint_args[@]}"
+exec cargo clippy --message-format=short "${cargo_args[@]}" -- "${lint_args[@]}" "${publish_lint_args[@]}"

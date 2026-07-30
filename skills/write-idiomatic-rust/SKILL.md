@@ -16,6 +16,7 @@ Keep work scoped to the task. Add a helper, trait, type, module, or dependency o
 3. Use Reference routing below. Start with the smallest matching guide and open only the upstream pages tied to a concrete decision. Expand only when the code or requirements expose another decision. Record applicable guidance and material deviations; do not enumerate irrelevant rules.
 4. Implement or recommend the smallest design that preserves behavior and compatibility while keeping responsibility, data flow, and ownership locally understandable. State the impact and migration path for any required breaking change.
 5. Validate according to task type:
+   - Pass `--message-format=short` to `cargo bench`, `build`, `check`, `doc`, `fix`, `install`, `run`, `rustc`, `rustdoc`, and `test`.
    - For an implementation, fix, or refactor that changes the Rust project, run `<skill-root>/scripts/strict-clippy.sh` from the target project's root with the needed package, target, and feature options. Then run the project's normal Clippy command and its required formatting, tests, and supported feature or target checks. Follow [Clippy policy](references/clippy-policy.md).
    - For a review without code changes, run targeted non-mutating diagnostics only when they materially support the review; strict Clippy is optional unless the user or project requires it.
    - For design advice or explanation without project changes, do not run validation commands unless they are needed to answer accurately.
